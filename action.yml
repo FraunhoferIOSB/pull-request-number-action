@@ -1,0 +1,16 @@
+name: 'Get PR number'
+description: 'Gets it'
+inputs:
+  repo-to-check:  # id of input
+    description: 'GitHub API pulls endpoint of repo to check'
+    required: true
+  name-of-pr:
+    description: 'name of PR to check for'
+    required: true
+  # maybe add env variable here
+outputs:
+  pr-number: # id of output
+    description: 'returns the output number'
+runs:
+  using: 'node16'
+  main: 'index.js'
