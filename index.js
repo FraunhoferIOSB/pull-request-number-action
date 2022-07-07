@@ -1,33 +1,52 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { curly } = require('node-libcurl');
+const fetch = require('node-fetch');
+
+var repoToCheck = `https://api.github.com/repos/FraunhoferIOSB/FAAAST-Package-Explorer-Converter/pulls`;
+var nameOfPr = 'second-CI-Test-Iterartion';
+
+
+async function fetchPullRequests(url) {
+
+  const response = await fetch(url);
+
+  if (response.ok) {
+    return response.json()
+  }
+  else {
+    throw `GET-request to ${url} failed!`;
+  }
+}
+
+async function checkForRequest(url, name) {
+  var data = await fetchPullRequests(url)
+  console.log(data)
+  
+  let found = false;
+
+  for (const pullrequest of data) {
+      console.log(pullrequest);
+      if ( pullrequest.head.ref == name ) {
+          core.setOutput("pr-number", pullrequest.number);
+          found = true;
+          console.log(`Found PR ${pullrequest.head.ref} with number: ${pullrequest.number}`);
+          break;
+      }
+    };
+  
+  if (!found) {
+      throw `No PR with name ${nameOfPr} found in ${repoToCheck}! `
+  }
+}
 
 try {
+
     // get input
     const repoToCheck = core.getInput('repo-to-check');
     const nameOfPr = core.getInput('name-of-pr');
-    console.log(`Checking Repo ${repoToCheck} for PR with name ${nameOfPr}`);
 
-    const { statusCode, data, headers } = await curly.get(repoToCheck)
-    console.log(`Get returned ${statusCode}`)
-    if (statusCode == 200) {
-        let found = false;
+    checkForRequest(repoToCheck, nameOfPr)
 
-        for (const pr of data.array) {
-            console.log(element);
-            if ( pr.head.ref == nameOfPr ) {
-                core.setOutput("pr-number", pr.number);
-                found = true;
-                console.log(`Found PR ${pr.head.ref} with number: ${pr.number}`);
-                break;
-            }
-          };
-        
-        if (!found) {
-            throw `No PR with name ${nameOfPr} found in ${repoToCheck}! `
-        }
-    }
-    else throw `GET-request to ${repoToCheck} failed with ${statusCode}!`
   } catch (error) {
     core.setFailed(error.message);
   }
