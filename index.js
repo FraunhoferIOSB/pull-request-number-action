@@ -1,13 +1,11 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fetch = require('node-fetch');
-
-var repoToCheck = `https://api.github.com/repos/FraunhoferIOSB/FAAAST-Package-Explorer-Converter/pulls`;
-var nameOfPr = 'second-CI-Test-Iterartion';
+const http = require('url');
 
 
 async function fetchPullRequests(url) {
-
+  
   const response = await fetch(url);
 
   if (response.ok) {
@@ -39,13 +37,26 @@ async function checkForRequest(url, name) {
   }
 }
 
-try {
+function modifyURL(inputUrl) {
+  const repoUrl = new URL(inputUrl);
 
+  const pathnameArray = repoUrl.pathname.split('/');
+
+  if( !pathnameArray[pathnameArray.length - 1].includes('pulls') ) {
+      repoUrl.pathname = pathnameArray.concat('pulls').join('/');
+  }
+
+  return repoUrl;
+}
+
+try {
     // get input
     const repoToCheck = core.getInput('repo-to-check');
     const nameOfPr = core.getInput('name-of-pr');
 
-    checkForRequest(repoToCheck, nameOfPr)
+    const url = modifyURL(repoToCheck)
+
+    checkForRequest(url, nameOfPr)
 
   } catch (error) {
     core.setFailed(error.message);
