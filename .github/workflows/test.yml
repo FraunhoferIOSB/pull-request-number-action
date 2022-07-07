@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Check for PR number
         id: check
-        uses: chrweiss/pull-request-number-action@v0.1
+        uses: chrweiss/pull-request-number-action@v0.1.1
         with:
           repo-to-check: 'https://api.github.com/repos/FraunhoferIOSB/FAAAST-Package-Explorer-Converter/pulls'
           name-of-pr: 'second-CI-Test-Iterartion'
