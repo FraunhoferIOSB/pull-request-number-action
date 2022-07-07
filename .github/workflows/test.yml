@@ -1,0 +1,18 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  print-something:
+    runs-on: ubuntu-latest
+    name: job to test gh action
+
+    steps:
+      - name: Check for PR number
+        id: check
+        uses: chrweiss/pull-request-number-action
+        with:
+          repo-to-check: 'https://api.github.com/repos/FraunhoferIOSB/FAAAST-Package-Explorer-Converter/pulls'
+          name-of-pr: 'second-CI-Test-Iterartion'
+      # Use the output 'check step'
+      - name: Get the output time
+        run: echo "The number is ${{ steps.check.outputs.pr-number }}"
