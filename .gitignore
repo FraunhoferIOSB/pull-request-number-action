@@ -1,2 +1,2 @@
 # ignore all the nodejs contents
-node_modules/*
+# node_modules/*
